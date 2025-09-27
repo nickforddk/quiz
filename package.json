@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && copy dist\\index.html dist\\404.html",
     "preview": "vite preview",
-    "deploy": "npm run build && npx gh-pages -d dist -t true"
+    "deploy": "npm run build"
   },
   "dependencies": {
     "firebase": "^11.0.0",
