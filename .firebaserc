@@ -1,0 +1,11 @@
+{
+  "projects": {
+    "default": {
+      "database": "quiz",
+      "projectId": "your-firebase-project-id",
+      "storageBucket": "your-firebase-project-id.appspot.com",
+      "messagingSenderId": "your-messaging-sender-id",
+      "appId": "your-app-id"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+:root {
+  --primary-color: #4A90E2; /* Primary color for the application */
+  --secondary-color: #50E3C2; /* Secondary color for accents */
+  --background-color: #F5F7FA; /* Background color for the app */
+  --text-color: #333333; /* Default text color */
+  --header-background: #FFFFFF; /* Background color for the header */
+  --footer-background: #FFFFFF; /* Background color for the footer */
+  --border-color: #E0E0E0; /* Color for borders */
+  --button-background: #4A90E2; /* Background color for buttons */
+  --button-hover-background: #357ABD; /* Hover background color for buttons */
+  --error-color: #D0021B; /* Color for error messages */
+  --success-color: #7ED321; /* Color for success messages */
+  --font-family: 'Arial', sans-serif; /* Default font family */
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: var(--header-background);
+  border-bottom: 1px solid var(--border-color);
+}
+
+footer {
+  background-color: var(--footer-background);
+  border-top: 1px solid var(--border-color);
+}
+
+button {
+  background-color: var(--button-background);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--button-hover-background);
+}
+
+.error {
+  color: var(--error-color);
+}
+
+.success {
+  color: var(--success-color);
+}
