@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
-  base: '/',        // custom domain => root
+// Use / during dev, /quiz/ only for production build (GitHub Pages project site)
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/quiz/' : '/',
   plugins: [react()]
-});
+}));

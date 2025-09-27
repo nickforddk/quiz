@@ -10,7 +10,7 @@ import { AuthProvider } from './context/AuthContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AuthProvider>
-    <BrowserRouter basename={import.meta.env.DEV ? '/' : '/quiz/'}>
+    <BrowserRouter basename={import.meta.env.DEV ? '/' : '/quiz'}>
       <Routes>
         <Route path="/" element={<Student />} />
         <Route path="/instructor" element={<Instructor />} />
