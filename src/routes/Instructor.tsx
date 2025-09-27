@@ -20,7 +20,7 @@ export default function Instructor() {
     return <>
       <header>
         <h1>Pulse check</h1>
-        <div class = "menu"><a href="/" target="_blank">Start</a></div>
+        <div class = "menu"><a href="../" target="_blank">Start</a></div>
       </header>
       <div className="p-6 space-y-4 max-w-md text-center flex flex-col flex-1 align-center justify-center">
         <h2 className="text-2xl font-bold">Login</h2>
@@ -49,7 +49,7 @@ export default function Instructor() {
     <>
       <header>
         <h1>Quiz dashboard</h1>
-        <div class = "menu"><a href="/screen" target="_blank">Screen</a></div>
+        <div class = "menu"><a href="../screen/" target="_blank">Screen</a></div>
       </header>
       <div className="p-6 space-y-6 w-screen">
         <QuizManager state={state} />
