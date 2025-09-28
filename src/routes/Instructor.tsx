@@ -29,8 +29,12 @@ export default function Instructor() {
 
   if (!isInstructor) {
     return (
-      <div className="p-6 max-w-sm space-y-4">
-        <h1 className="text-lg font-semibold">Instructor Login</h1>
+      <>
+      <header>
+        <h1>Pulse check</h1>
+        <div className="menu"><a href="./" target="_blank">Play quiz</a></div>
+      </header>
+      <div className="p-6 max-w-sm space-y-4 bg-white dark:bg-blue-800 shadow flex flex-col mt-auto mb-auto rounded">
         <button
           disabled={loginBusy}
           onClick={async () => {
@@ -45,7 +49,7 @@ export default function Instructor() {
               setLoginBusy(false);
             }
           }}
-          className="px-4 py-2 bg-gray-900 text-white rounded disabled:opacity-50"
+          className="px-4 py-2 bg-blue-700 text-white dark:bg-blue-300 dark:text-blue-700 hover:bg-blue-600 hover:text-white rounded disabled:bg-grey-500 disabled:text-grey-300 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
           {loginBusy ? 'Connecting…' : 'Continue with GitHub'}
         </button>
@@ -56,6 +60,19 @@ export default function Instructor() {
           </div>
         )}
       </div>
+      <footer>
+        <a
+          href="https://www.sdu.dk/en/om-sdu/institutter-centre/oekonomiskinstitut"
+          title="SDU: University of Southern Denmark"
+          className="sdu"
+        />
+        <a
+          href="https://www.nickford.com"
+          title="Nick Ford"
+          className="nf"
+        />
+      </footer>
+      </>
     );
   }
 
@@ -65,7 +82,7 @@ export default function Instructor() {
     <>
       <header>
         <h1>Quiz dashboard</h1>
-        <div class = "menu"><a href="./screen/" target="_blank">Screen</a></div>
+        <div className="menu"><a href="./screen/" target="_blank">Screen</a></div>
       </header>
       <div className="p-6 space-y-6 w-screen">
         <QuizManager state={state} />
