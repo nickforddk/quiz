@@ -17,13 +17,13 @@
   --color-violet-500: var(--violet);
   --color-grey-500: var(--grey);
 
-  --color-blue-100: color-mix(in oklch, var(--blue-l), var(--white) 50%);
-  --color-cyan-100: color-mix(in oklch, var(--cyan-l), var(--white) 50%);
-  --color-green-100: color-mix(in oklch, var(--green-l), var(--white) 50%);
-  --color-orange-100: color-mix(in oklch, var(--orange-l), var(--white) 50%);
-  --color-red-100: color-mix(in oklch, var(--red-l), var(--white) 50%);
-  --color-violet-100: color-mix(in oklch, var(--violet-l), var(--white) 50%);
-  --color-grey-100: color-mix(in oklch, var(--grey-l), var(--white) 50%);
+  --color-blue-100: oklch(from var(--blue) 95% calc(c / 10) h);
+  --color-cyan-100: oklch(from var(--cyan) 95% calc(c / 10) h);
+  --color-green-100: oklch(from var(--green) 95% calc(c / 10) h);
+  --color-orange-100: oklch(from var(--orange) 95% calc(c / 10) h);
+  --color-red-100: oklch(from var(--red) 95% calc(c / 10) h);
+  --color-violet-100: oklch(from var(--violet) 95% calc(c / 10) h);
+  --color-grey-100: oklch(from var(--grey) 95% calc(c / 10) h);
 
   --color-blue-200: var(--blue-l);
   --color-cyan-200: var(--cyan-l);
@@ -73,13 +73,13 @@
   --color-violet-800: var(--violet-d);
   --color-grey-800: var(--grey-d);
 
-  --color-blue-900: color-mix(in oklch, var(--blue-d), var(--black) 50%);
-  --color-cyan-900: color-mix(in oklch, var(--cyan-d), var(--black) 50%);
-  --color-green-900: color-mix(in oklch, var(--green-d), var(--black) 50%);
-  --color-orange-900: color-mix(in oklch, var(--orange-d), var(--black) 50%);
-  --color-red-900: color-mix(in oklch, var(--red-d), var(--black) 50%);
-  --color-violet-900: color-mix(in oklch, var(--violet-d), var(--black) 50%);
-  --color-grey-900: color-mix(in oklch, var(--grey-d), var(--black) 50%);
+  --color-blue-900: oklch(from var(--blue) 10% calc(c / 3) h);
+  --color-cyan-900: oklch(from var(--cyan) 10% calc(c / 3) h);
+  --color-green-900: oklch(from var(--green) 10% calc(c / 3) h);
+  --color-orange-900: oklch(from var(--orange) 10% calc(c / 3) h);
+  --color-red-900: oklch(from var(--red) 10% calc(c / 3) h);
+  --color-violet-900: oklch(from var(--violet) 10% calc(c / 3) h);
+  --color-grey-900: oklch(from var(--grey) 10% calc(c / 3) h);
 
   --color-slate-100: var(--color-grey-100);
   --color-slate-200: var(--color-grey-200);
@@ -100,6 +100,14 @@
   --color-gray-700: var(--color-grey-700);
   --color-gray-800: var(--color-grey-800);
   --color-gray-900: var(--color-grey-900);
+
+  --color-blue-50: var(--color-blue-100);
+  --color-cyan-50: var(--color-cyan-100);
+  --color-green-50: var(--color-green-100);
+  --color-orange-50: var(--color-orange-100);
+  --color-red-50: var(--color-red-100);
+  --color-violet-50: var(--color-violet-100);
+  --color-grey-50: var(--color-grey-100);
 }
 
 :root {
@@ -142,6 +150,10 @@ body {
       padding-bottom: 2rem;
     }
   }
+  &:has(.fullscreen) {
+    height: 100dvh;
+    overflow: hidden;
+  }
 
   h2.icon {
     display: flex;
@@ -178,7 +190,7 @@ div#root {
   [class*="bg-"] :is(h1, h2, h3, h4) {
     color: unset;
   }
-  
+
   > header {
     > h1 {
       display: flex;
@@ -284,6 +296,38 @@ div#root {
         mask-size: 0.95lh 0.95lh, 0.95lh 0.95lh, 1lh 1lh, 1lh 1lh;
       } 
     }
+  }
+
+  .qrcode {
+    background: currentColor;
+    box-sizing: border-box;
+    border-radius: var(--border-rad);
+    display: block;
+    mask: url(git_quiz.svg) no-repeat center / contain;
+  }
+
+  .scoreboard {
+    animation: scoreboard-in 0.5s ease forwards;
+  }
+}
+
+@keyframes scoreboard-in {
+  0% {
+    translate: 0% 100%;
+    background: light-dark(var(--blue-pr), var(--cyan));
+  }
+  0%, 25% {
+    clip-path: inset(2rem calc(50vw - 2rem) calc(100vh - 6rem) calc(50vw - 2rem) round 2rem);
+    padding-top: 0vh;
+  }
+  50% {
+    clip-path: inset(2rem 2rem calc(100vh - 6rem) 2rem round 2rem);
+  }
+  25%, 100% {
+    translate: 0% 0%;
+  }
+  100% {
+    clip-path: inset(0% round 0px);
   }
 }
 
