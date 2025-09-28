@@ -1,23 +1,26 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { ensureAnonymousLogin } from '../services/firebase';
+import { useAuthContext } from '../context/AuthContext';
+import { ensureAnon } from '../services/authService';
 import { listenQuizState, getQuiz, submitOrUpdateAnswer } from '../services/quizService';
 import { db } from '../services/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import NameRegistrationForm from '../components/auth/NameRegistrationForm';
+import { signOut } from 'firebase/auth';
+import { auth } from '../services/firebase';
 
 const Student = () => {
-  const { user } = useContext(AuthContext);
+  const { user, profile } = useAuthContext();
   const [state, setState] = useState<any | null>(null);
   const [quiz, setQuiz] = useState<any | null>(null);
   const [localAnswer, setLocalAnswer] = useState<string | undefined>();
   const [answers, setAnswers] = useState<Record<string, { answer: string }>>({});
+  const [lastResetVersion, setLastResetVersion] = useState<number | null>(null);
 
   // Load global quiz state + active quiz + this user's answer doc
   useEffect(() => {
     let unsubAnswer: (() => void) | undefined;
 
-    ensureAnonymousLogin()
+    ensureAnon()
       .then(u => {
         const ref = doc(db, 'answers', u.uid);
         unsubAnswer = onSnapshot(ref, snap => {
@@ -55,6 +58,30 @@ const Student = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Update existing listenQuizState effect OR in the same effect where you already call listenQuizState:
+  useEffect(() => {
+    // (This assumes you already have the listenQuizState subscribed earlier)
+    // Add a separate effect watching state changes:
+    if (state && typeof state.resetUsersVersion === 'number') {
+      if (lastResetVersion === null) {
+        setLastResetVersion(state.resetUsersVersion);
+      } else if (state.resetUsersVersion > lastResetVersion) {
+        // Force logout & re-anonymous login so user must re-enter name
+        (async () => {
+          try {
+            await signOut(auth);
+          } catch (e) {
+            console.error('Sign out failed', e);
+          } finally {
+            setLastResetVersion(state.resetUsersVersion);
+            // ensureAnonymousLogin will run again due to your existing logic (or call directly)
+            ensureAnon().catch(()=>{});
+          }
+        })();
+      }
+    }
+  }, [state, lastResetVersion]);
 
   if (!state || !state.activeQuizId) return <div className="p-4">Waiting for quiz...</div>;
   if (!quiz) return <div className="p-4">Loading quiz…</div>;
@@ -96,16 +123,22 @@ const Student = () => {
     return n;
   }, 0);
 
+  const needsName = !!user && !(profile?.name || user.displayName);
+
   return (
     <>
-      <header>
-        <h1>{quiz.name}</h1>
-      </header>
-      <div className="p-4 pb-6 space-y-5 max-w-xl mt-auto mb-auto">
-        {!user ? (
+      {needsName && (
+        <div className="mt-auto mb-auto bg-white dark:bg-blue-700 p-4 rounded shadow">
           <NameRegistrationForm />
-        ) : (
-          <>
+        </div>
+        
+        )}
+      {!needsName && (
+        <>
+          <header>
+            <h1>{quiz.name}</h1>
+          </header>
+          <div className="pb-6 space-y-5 max-w-xl mt-auto mb-auto">
             <div className="flex items-baseline gap-3">
               <span className="text-sm font-semibold text-gray-500 tabular-nums">
                 Q{qIndex + 1} / {quiz.questions.length}
@@ -129,9 +162,10 @@ const Student = () => {
                         roundOpen && 'cursor-pointer',
                         !state.reveal && !isChosen && roundOpen && 'bg-white dark:bg-blue-700 dark:text-white hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-200',
                         !state.reveal && 'hover:border-blue-500',
-                        isChosen && !state.reveal && 'bg-blue-700 border-transparent text-white dark:bg-white dark:text-blue-700',
+                        isChosen && 'opacity-100 bg-blue-700 border-transparent text-white dark:bg-white dark:text-blue-700',
                         correct && 'opacity-100 bg-green-500 border-green-700 dark:border-green-300 text-white',
-                        wrongChosen && 'opacity-100 bg-red-500 border-red-700 dark:border-red-300 text-white',
+                        isChosen && correct && 'opacity-100 bg-green-500 border-green-700 dark:border-green-300 text-white',
+                        isChosen && wrongChosen && 'opacity-100 bg-red-500 border-red-700 dark:border-red-300 text-white',
                         !roundOpen && 'opacity-50 pointer-events-none',
                         locked && !isChosen && 'cursor-not-allowed',
                       ].filter(Boolean).join(' ')}
@@ -167,6 +201,11 @@ const Student = () => {
                 {!state.ended && roundOpen && effectiveAnswer && 'Answer selected'}
                 {!state.ended && !roundOpen && !state.reveal && 'Round closed'}
                 {!state.ended && state.reveal && 'Answer revealed'}
+                {!needsName && user && (
+                  <div className="text-xs mt-auto pt-2">
+                    Your ID: {user.uid.slice(0,6)}
+                  </div>
+                )}
               </div>
 
               {revealedCount > 0 && (
@@ -183,9 +222,9 @@ const Student = () => {
                 </div>
               )}
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
       <footer>
         <a
           href="https://www.sdu.dk/en/om-sdu/institutter-centre/oekonomiskinstitut"

@@ -1,34 +1,45 @@
 import React, { useState } from 'react';
+import { saveUserName } from '../../services/authService';
+import { useAuthContext } from '../../context/AuthContext';
 
-const NameRegistrationForm: React.FC<{ onRegister: (name: string) => void }> = ({ onRegister }) => {
+export default function NameRegistrationForm() {
+  const { user, profile, refreshProfile } = useAuthContext();
   const [name, setName] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [done, setDone] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (name.trim()) {
-      onRegister(name.trim());
-      setName('');
-    }
-  };
+  if (!user) return null;
+  if (profile?.name || user.displayName || done) return null;
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col items-center">
-      <label htmlFor="name" className="mb-2 text-lg font-semibold">
-        Enter your name:
-      </label>
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        setSaving(true);
+        try {
+          await saveUserName(name.trim());
+          setDone(true);
+        } finally {
+          setSaving(false);
+        }
+      }}
+      className="space-y-2"
+    >
+      <label className="block text-sm font-medium">Enter your display name</label>
       <input
-        type="text"
-        id="name"
+        className="border rounded px-3 py-2 w-full"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="border border-gray-300 rounded p-2 mb-4"
+        maxLength={40}
         required
       />
-      <button type="submit" className="bg-blue-500 text-white rounded p-2">
-        Register
+      <button
+        disabled={saving}
+        className="px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white rounded cursor-pointer disabled:opacity-50"
+      >
+        {saving ? 'Saving...' : 'Save'}
       </button>
     </form>
   );
-};
-
-export default NameRegistrationForm;
+}

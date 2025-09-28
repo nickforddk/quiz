@@ -1,12 +1,5 @@
-import { initializeApp, getApps } from 'firebase/app';
-import {
-  getAuth,
-  signInAnonymously,
-  GithubAuthProvider,
-  signInWithPopup,
-  linkWithPopup,
-  signInWithCredential
-} from 'firebase/auth';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth, setPersistence, browserLocalPersistence, GithubAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -20,45 +13,15 @@ const firebaseConfig = {
 };
 
 if (!firebaseConfig.apiKey) {
-  console.error('Firebase config missing (apiKey). Check environment variables.');
+  console.error('Firebase config missing apiKey env vars.');
 }
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence).catch(()=>{});
+
 export const db = getFirestore(app);
 export const githubProvider = new GithubAuthProvider();
 
-export function ensureAnonymousLogin() {
-  if (!auth.currentUser) {
-    return signInAnonymously(auth);
-  }
-  return Promise.resolve(auth.currentUser);
-}
-
-export async function signInWithGithub() {
-  const provider = githubProvider;
-  const current = auth.currentUser;
-  if (current && current.isAnonymous) {
-    try {
-      return await linkWithPopup(current, provider);
-    } catch (e: any) {
-      if (e.code === 'auth/credential-already-in-use') {
-        // Use existing GitHub account instead
-        const cred = GithubAuthProvider.credentialFromError(e);
-        if (cred) {
-          // (Optional) migrate anonymous data here before switching accounts
-          return await signInWithCredential(auth, cred);
-        }
-        // Fallback
-        return await signInWithPopup(auth, provider);
-      }
-      throw e;
-    }
-  }
-  return signInWithPopup(auth, provider);
-}
-
-export function watchAuth(cb: (u:any)=>void) {
-  return onAuthStateChanged(auth, cb);
-}
+export { app };

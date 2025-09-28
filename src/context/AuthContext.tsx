@@ -1,52 +1,61 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { auth } from '../services/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { ensureAnonymousLogin } from '../services/firebase';
+import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../services/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 
-export interface AuthContextValue {
-  user: User | null;
-  loading: boolean;
+interface AuthCtx {
+  user: any;
+  profile: any;
   isInstructor: boolean;
+  loading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-const AuthContextInternal = AuthContext; // alias if some code expects default
+export const AuthContext = createContext<AuthCtx>({
+  user: null,
+  profile: null,
+  isInstructor: false,
+  loading: true
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(auth.currentUser);
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const unsubProfile = useRef<() => void>();
 
   useEffect(() => {
-    // Ensure anonymous session for students
-    if (!auth.currentUser) {
-      ensureAnonymousLogin().catch(() => {});
-    }
-    const unsub = onAuthStateChanged(auth, u => {
+    const unsubAuth = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      if (unsubProfile.current) unsubProfile.current();
+      setProfile(null);
+      if (u) {
+        unsubProfile.current = onSnapshot(doc(db, 'userProfiles', u.uid), snap => {
+          setProfile(snap.exists() ? snap.data() : null);
+        });
+        // Debug (remove later)
+        console.log('Auth user providerData:', u.providerData.map((p:any)=>p.providerId));
+      }
     });
-    return () => unsub();
+    return () => {
+      unsubAuth();
+      if (unsubProfile.current) unsubProfile.current();
+    };
   }, []);
 
-  const isInstructor =
-    !!user &&
-    user.providerData.some(p => p.providerId === 'github.com');
-
-  const value: AuthContextValue = { user, loading, isInstructor };
+  // Ensure provider list is logged and isInstructor only checks github.com
+  const isInstructor = !!user && !user.isAnonymous &&
+    user.providerData.some((p:any)=>p?.providerId === 'github.com');
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, profile, isInstructor, loading }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook
 export function useAuthContext() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuthContext must be used inside AuthProvider');
-  return ctx;
+  return useContext(AuthContext);
 }
 
-// Keep default export (some code might import default)
-export default AuthContextInternal;
+export default AuthContext;

@@ -1,7 +1,7 @@
 import { db, auth } from './firebase';
 import {
   doc, getDoc, setDoc, onSnapshot, collection, updateDoc, addDoc,
-  getDocs, serverTimestamp, deleteDoc, writeBatch
+  getDocs, serverTimestamp, deleteDoc, writeBatch, runTransaction
 } from 'firebase/firestore';
 
 // Collections / docs
@@ -46,10 +46,15 @@ export async function deleteQuiz(quizId: string) {
 }
 
 // ---------- Global State ----------
-export function listenQuizState(cb:(data:any|null)=>void) {
-  return onSnapshot(stateDoc, s => cb(s.exists()?s.data():null));
+export function listenQuizState(cb:(s:any)=>void) {
+  return onSnapshot(stateDoc, snap => {
+    if (snap.exists()) cb({ id: snap.id, ...snap.data() });
+  }, err => {
+    console.error('quizState listener error', err);
+  });
 }
 
+// Ensure new field exists when state created
 export async function initializeQuizStateIfMissing() {
   const snap = await getDoc(stateDoc);
   if (!snap.exists()) {
@@ -59,9 +64,12 @@ export async function initializeQuizStateIfMissing() {
       open: false,
       reveal: false,
       ended: false,
-      scoreboardVisible: false, // ADDED
+      scoreboardVisible: false,
+      resetUsersVersion: 0, // NEW
       updatedAt: serverTimestamp()
     });
+  } else if (snap.exists() && snap.data().resetUsersVersion === undefined) {
+    await updateDoc(stateDoc, { resetUsersVersion: 0 });
   }
 }
 
@@ -124,10 +132,11 @@ export async function submitOrUpdateAnswer(questionId: string, answer: string) {
   const existing = snap.exists() ? (snap.data() as any) : {};
   const answers = existing.answers || {};
   answers[questionId] = { answer, ts: Date.now() }; // always overwrite while round open
+  const display = auth.currentUser?.displayName;
   await setDoc(
     ref,
     {
-      name: existing.name || user.displayName || user.uid.slice(0, 6),
+      name: existing.name || display || user.uid.slice(0,6),
       answers
     },
     { merge: true }
@@ -140,11 +149,37 @@ export function listenAnswers(cb:(arr:any[])=>void) {
   );
 }
 
+// Helper to just clear answers (original logic you had)
 export async function clearAllAnswers() {
-  const snap = await getDocs(collection(db, 'answers'));
-  const batch = writeBatch(db);
-  snap.docs.forEach(d => batch.delete(d.ref));
-  if (snap.docs.length) await batch.commit();
+  const qs = await getDocs(collection(db, 'answers'));
+  const batchSize = qs.size;
+  if (!batchSize) return;
+  const batchLimit = 400;
+  let batch = writeBatch(db);
+  let count = 0;
+  qs.forEach(docSnap => {
+    batch.delete(docSnap.ref);
+    count++;
+    if (count % batchLimit === 0) {
+      batch.commit();
+      batch = writeBatch(db);
+    }
+  });
+  await batch.commit();
+}
+
+// NEW: clear answers AND bump resetUsersVersion to force logout on clients
+export async function clearAllAnswersAndResetUsers() {
+  await clearAllAnswers();
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(stateDoc);
+    if (!snap.exists()) return;
+    const current = snap.data().resetUsersVersion ?? 0;
+    tx.update(stateDoc, {
+      resetUsersVersion: current + 1,
+      updatedAt: serverTimestamp()
+    });
+  });
 }
 
 // ---------- Scoring ----------

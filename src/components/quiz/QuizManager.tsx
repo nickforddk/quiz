@@ -3,7 +3,7 @@ import {
   listQuizzes, createQuiz, deleteQuiz, setActiveQuiz,
   getQuiz, updateQuiz, clearAllAnswers, restartQuiz,
   endQuiz, openRound, revealAnswers, setCurrentQuestion,
-  setScoreboardVisible
+  setScoreboardVisible, clearAllAnswersAndResetUsers
 } from '../../services/quizService';
 
 interface EditingQuiz {
@@ -190,7 +190,16 @@ export default function QuizManager({ state }: { state:any }) {
             {!state.ended && <button className="px-3 py-1 border rounded hover:bg-orange-400 hover:text-black hover:border-transparent cursor-pointer" onClick={()=>restartQuiz()}>Restart Quiz</button>}
             {!state.ended && <button className="px-3 py-1 bg-red-600 text-white hover:bg-red-400 hover:text-black rounded border border-transparent cursor-pointer" onClick={()=>{ if(confirm('End quiz?')) endQuiz(); }}>End Quiz</button>}
             {state.ended && <div className="px-3 py-1 bg-red-200 text-red-500 rounded border border-transparent">Quiz ended</div>}
-            <button className="px-3 py-1 border rounded hover:bg-orange-400 hover:text-black hover:border-transparent cursor-pointer" onClick={()=>{ if(confirm('Clear all student answers?')) clearAllAnswers(); }}>Clear Users</button>
+            <button
+              className="px-3 py-1 border rounded hover:bg-orange-400 hover:text-black hover:border-transparent cursor-pointer"
+              onClick={() => {
+                if (confirm('Clear all student answers AND force all users to re-enter their name?')) {
+                  clearAllAnswersAndResetUsers().catch(console.error);
+                }
+              }}
+            >
+              Clear Users
+            </button>
 
             <button className="px-3 py-1 border rounded hover:bg-blue-600 hover:text-white hover:border-transparent cursor-pointer" onClick={()=>setActiveQuiz(null)}>Deactivate</button>
           </div>
