@@ -62,7 +62,7 @@ export default function PublicScreen() {
               ].filter(Boolean).join(' ')}>
                 <div className="font-semibold min-h-8 text-lg">{o}</div>
                 <div className="text-3xl font-bold absolute top-4 right-4 leading-none tabular-nums">
-                  {showCounts ? count : (state.open ? '' : count)}
+                  {showCounts && count > 0 ? count : ''}
                 </div>
               </div>
             );
