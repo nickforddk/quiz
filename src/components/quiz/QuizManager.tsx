@@ -46,17 +46,17 @@ export default function QuizManager({ state }: { state:any }) {
       snap.forEach(d => {
         const data: any = d.data();
         const answers = data?.answers;
-        if (Array.isArray(answers) &&
-            state?.currentQuestion != null &&
-            answers[state.currentQuestion] !== undefined &&
-            answers[state.currentQuestion] !== null &&
-            answers[state.currentQuestion] !== '') {
+        if (
+          Array.isArray(answers) &&
+          state?.currentQuestion != null &&
+          answers[state.currentQuestion] !== undefined &&
+          answers[state.currentQuestion] !== null &&
+          answers[state.currentQuestion] !== ''
+        ) {
           answered++;
         }
       });
       setAnsweredCount(answered);
-      // Fallback: if no profiles collection usage, treat answer docs as users
-      if (userCount === 0) setUserCount(snap.size);
     });
 
     return () => {

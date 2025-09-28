@@ -168,10 +168,31 @@ export async function clearAllAnswers() {
   await batch.commit();
 }
 
+async function deleteAllInCollection(colPath: string) {
+  const colRef = collection(db, colPath);
+  const snap = await getDocs(colRef);
+  if (snap.empty) return;
+  let batch = writeBatch(db);
+  let count = 0;
+  for (const d of snap.docs) {
+    batch.delete(d.ref);
+    count++;
+    if (count % 450 === 0) { // stay under 500/commit
+      await batch.commit();
+      batch = writeBatch(db);
+    }
+  }
+  await batch.commit();
+}
+
 // NEW: clear answers AND bump resetUsersVersion to force logout on clients
 export async function clearAllAnswersAndResetUsers() {
-  await clearAllAnswers();
-  await runTransaction(db, async (tx) => {
+  // Delete answers
+  await deleteAllInCollection('answers');
+  // Delete user profiles (names)
+  await deleteAllInCollection('userProfiles');
+  // Bump resetUsersVersion so any connected clients react (sign out logic, etc.)
+  await runTransaction(db, async tx => {
     const snap = await tx.get(stateDoc);
     if (!snap.exists()) return;
     const current = snap.data().resetUsersVersion ?? 0;
