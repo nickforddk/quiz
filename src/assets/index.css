@@ -303,7 +303,7 @@ div#root {
     box-sizing: border-box;
     border-radius: var(--border-rad);
     display: block;
-    mask: url(git_quiz.svg) no-repeat center / contain;
+    mask: url(/git_quiz.svg) no-repeat center / contain;
   }
 
   .scoreboard {
