@@ -44,13 +44,13 @@ export default function PublicScreen() {
 
   return (
     <>
-    <div className="h-screen fullscreen flex flex-col md:flex-row md:gap-8">
-      <div className="space-y-4 h-full flex flex-col md:justify-center overflow-auto">
+    <div className="h-screen w-screen fullscreen flex flex-col md:flex-row md:gap-8 justify-between">
+      <div className="space-y-4 h-full w-full flex flex-col md:justify-center overflow-auto">
         <div className="flex flex-row justify-between text-sm font-semibold text-gray-500">
           <span>Q {state.currentQuestion+1} / {quiz.questions.length}</span>
         </div>
         <h2 className="font-bold mb-8">{q.text}</h2>
-        <div className="grid gap-4 md:grid-cols-2 auto-rows-fr">
+        <div className="grid gap-4 md:grid-cols-2 auto-rows-fr w-full">
           {q.options.map((o:string) => {
             const count = counts[o];
             const correct = state.reveal && q.correct === o;
@@ -69,7 +69,7 @@ export default function PublicScreen() {
           })}
         </div>          
       </div>
-      <div className="bg-grey-500 dark:bg-blue-700 text-white flex md:flex-col md:w-50 justify-between text-sm">
+      <div className="bg-grey-500 dark:bg-blue-700 text-white flex md:flex-col w-full md:max-w-40 justify-between text-sm">
         <div className="flex flex-col p-4 gap-1">
           <span className="font-semibold">{quiz.name}</span>
           {state.ended && 'Quiz ended'}
