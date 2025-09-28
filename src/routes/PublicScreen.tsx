@@ -47,7 +47,7 @@ export default function PublicScreen() {
     <div className="h-screen w-screen fullscreen flex flex-col md:flex-row md:gap-8 justify-between">
       <div className="space-y-4 h-full w-full flex flex-col md:justify-center overflow-auto">
         <div className="flex flex-row justify-between text-sm font-semibold text-gray-500">
-          <span>Q {state.currentQuestion+1} / {quiz.questions.length}</span>
+          <span>Q{state.currentQuestion+1} / {quiz.questions.length}</span>
         </div>
         <h2 className="font-bold mb-8">{q.text}</h2>
         <div className="grid gap-4 md:grid-cols-2 auto-rows-fr w-full">

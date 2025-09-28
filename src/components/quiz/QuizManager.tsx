@@ -5,6 +5,8 @@ import {
   endQuiz, openRound, revealAnswers, setCurrentQuestion,
   setScoreboardVisible, clearAllAnswersAndResetUsers
 } from '../../services/quizService';
+import { onSnapshot, collection } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 
 interface EditingQuiz {
   id?: string;
@@ -17,6 +19,8 @@ export default function QuizManager({ state }: { state:any }) {
   const [activeQuiz, setActiveQuizLocal] = useState<any|null>(null);
   const [editing, setEditing] = useState<EditingQuiz|null>(null);
   const [loading, setLoading] = useState(false);
+  const [userCount, setUserCount] = useState(0);
+  const [answeredCount, setAnsweredCount] = useState(0);
   const activeId = state?.activeQuizId;
 
   async function refresh() {
@@ -28,6 +32,39 @@ export default function QuizManager({ state }: { state:any }) {
   }
 
   useEffect(() => { refresh(); }, [activeId]);
+
+  // Listen for users (profiles) and answers to compute counts
+  useEffect(() => {
+    // Profiles = logged in users who registered a name
+    const unsubProfiles = onSnapshot(collection(db, 'userProfiles'), snap => {
+      setUserCount(snap.size);
+    });
+
+    // Answers = docs per user (assumed); count those who answered current question
+    const unsubAnswers = onSnapshot(collection(db, 'answers'), snap => {
+      let answered = 0;
+      snap.forEach(d => {
+        const data: any = d.data();
+        const answers = data?.answers;
+        if (Array.isArray(answers) &&
+            state?.currentQuestion != null &&
+            answers[state.currentQuestion] !== undefined &&
+            answers[state.currentQuestion] !== null &&
+            answers[state.currentQuestion] !== '') {
+          answered++;
+        }
+      });
+      setAnsweredCount(answered);
+      // Fallback: if no profiles collection usage, treat answer docs as users
+      if (userCount === 0) setUserCount(snap.size);
+    });
+
+    return () => {
+      unsubProfiles();
+      unsubAnswers();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.currentQuestion]);
 
   function parseQuestions(text:string) {
     // Format: Each question block separated by blank line
@@ -203,8 +240,19 @@ export default function QuizManager({ state }: { state:any }) {
 
             <button className="px-3 py-1 border rounded hover:bg-blue-600 hover:text-white hover:border-transparent cursor-pointer" onClick={()=>setActiveQuiz(null)}>Deactivate</button>
           </div>
-          <div className="text-xs">
-            Q{state.currentQuestion+1}/{activeQuiz.questions.length} | Open: {state.open? 'Yes':'No'} | Reveal: {state.reveal? 'Yes':'No'}
+          <div className="text-xs mt-4 flex flex-col md:flex-row gap-2 justify-between">
+            <div className="flex">
+              <span className="p-1 py-0.5 bg-blue-700 text-white text-bold rounded">
+                Q{state.currentQuestion+1} / {activeQuiz.questions.length}
+              </span>
+              <span className="p-1 py-0.5">
+                {' '}Open: {state.open? 'Yes':'No'} |
+                {' '}Reveal: {state.reveal? 'Yes':'No'}
+              </span>
+            </div>
+            <span className="p-1 py-0.5 bg-grey-400 text-grey-700 rounded">
+              Users: {userCount} | Answered round: {answeredCount}
+            </span>
           </div>
         </div>
       )}
