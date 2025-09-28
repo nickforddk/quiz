@@ -84,7 +84,7 @@ export default function Instructor() {
         <h1>Quiz dashboard</h1>
         <div className="menu"><a href="./screen/" target="_blank">Screen</a></div>
       </header>
-      <div className="p-6 space-y-6 w-screen">
+      <div className="p-6 space-y-6 w-screen mb-auto">
         <QuizManager state={state} />
         <details className="text-xs max-w-4xl ml-auto mr-auto">
           <summary>Raw state</summary>
