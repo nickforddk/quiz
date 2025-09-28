@@ -193,34 +193,29 @@ const Student = () => {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="rounded p-3 bg-gray-500 text-white text-sm md:col-span-2">
+            <div className="flex flex-col md:flex-row gap-4">
+              {revealedCount > 0 && (
+                <div className="rounded p-3 bg-blue-500 text-white text-sm flex flex-col justify-between gap-2 md:flex-1">
+                  <div className="font-medium mb-1">Your score</div>
+                  <div className="text-3xl leading-none tabular-nums text-blue-200">
+                    <strong className="text-white">{correctSoFar}</strong> / {revealedCount}
+                  </div>
+                </div>
+              )}
+
+              <div className="rounded p-3 bg-gray-500 text-white text-sm md:flex-2">
                 <div className="font-medium mb-1">Status</div>
-                {state.ended && 'Quiz ended.'}
+                {state.ended && 'Game over!'}
                 {!state.ended && roundOpen && !effectiveAnswer && 'Select an answer...'}
                 {!state.ended && roundOpen && effectiveAnswer && 'Answer selected'}
                 {!state.ended && !roundOpen && !state.reveal && 'Round closed'}
                 {!state.ended && state.reveal && 'Answer revealed'}
                 {!needsName && user && (
-                  <div className="text-xs mt-auto pt-2">
-                    Your ID: {user.uid.slice(0,6)}
+                  <div className="text-xs mt-auto pt-2 text-gray-200">
+                    ID: {user.uid.slice(0,6)}
                   </div>
                 )}
               </div>
-
-              {revealedCount > 0 && (
-                <div className="rounded p-3 bg-blue-500 text-white text-sm grid grid-cols-2 gap-2">
-                  <div className="font-medium mb-1 col-span-2">Your score</div>
-                  <div className="col-span-2 text-2xl leading-none tabular-nums">
-                    <strong>{correctSoFar}</strong> / {revealedCount}
-                  </div>
-                  {revealedCount < qIndex + 1 && !state.reveal && (
-                    <div className="text-xs text-blue-200 col-span-2">
-                      Score updates after this answer is revealed.
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         </>

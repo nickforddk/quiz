@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   listQuizzes, createQuiz, deleteQuiz, setActiveQuiz,
   getQuiz, updateQuiz, clearAllAnswers, restartQuiz,
@@ -21,6 +21,7 @@ export default function QuizManager({ state }: { state:any }) {
   const [loading, setLoading] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [answeredCount, setAnsweredCount] = useState(0);
+  const answersCacheRef = useRef<any[]>([]); // keep latest answers docs
   const activeId = state?.activeQuizId;
 
   async function refresh() {
@@ -33,38 +34,68 @@ export default function QuizManager({ state }: { state:any }) {
 
   useEffect(() => { refresh(); }, [activeId]);
 
-  // Listen for users (profiles) and answers to compute counts
+  // Profiles count
   useEffect(() => {
-    // Profiles = logged in users who registered a name
     const unsubProfiles = onSnapshot(collection(db, 'userProfiles'), snap => {
       setUserCount(snap.size);
     });
+    return () => unsubProfiles();
+  }, []);
 
-    // Answers = docs per user (assumed); count those who answered current question
+  // Subscribe once to answers; recompute on snapshot OR question change
+  useEffect(() => {
     const unsubAnswers = onSnapshot(collection(db, 'answers'), snap => {
-      let answered = 0;
-      snap.forEach(d => {
-        const data: any = d.data();
-        const answers = data?.answers;
-        if (
-          Array.isArray(answers) &&
-          state?.currentQuestion != null &&
-          answers[state.currentQuestion] !== undefined &&
-          answers[state.currentQuestion] !== null &&
-          answers[state.currentQuestion] !== ''
-        ) {
-          answered++;
-        }
-      });
-      setAnsweredCount(answered);
-    });
+      answersCacheRef.current = snap.docs.map(d => d.data());
+      recomputeAnswered();
+    }, err => console.error('answers listener error', err));
+    return () => unsubAnswers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    return () => {
-      unsubProfiles();
-      unsubAnswers();
-    };
+  // Recompute when currentQuestion changes
+  useEffect(() => {
+    recomputeAnswered();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.currentQuestion]);
+
+  function recomputeAnswered() {
+    const docs = answersCacheRef.current;
+    const qIndex = state?.currentQuestion;
+    if (qIndex == null) {
+      setAnsweredCount(0);
+      return;
+    }
+    let count = 0;
+    for (const docData of docs) {
+      const answers = docData?.answers;
+      if (!answers) continue;
+
+      let has = false;
+
+      if (Array.isArray(answers)) {
+        const val = answers[qIndex];
+        has = valuePresent(val);
+      } else if (typeof answers === 'object') {
+        // Try numeric key, then qN, then currentQuestion as string
+        const key1 = String(qIndex);
+        const key2 = 'q' + (qIndex + 1);
+        const candidate = answers[key1] ?? answers[key2];
+        has = valuePresent(candidate);
+      }
+
+      if (has) count++;
+    }
+    setAnsweredCount(count);
+  }
+
+  function valuePresent(val: any) {
+    if (val === undefined || val === null) return false;
+    if (typeof val === 'string') return val.trim().length > 0;
+    if (typeof val === 'number') return true;
+    if (Array.isArray(val)) return val.length > 0;
+    if (typeof val === 'object') return Object.keys(val).length > 0;
+    return false;
+  }
 
   function parseQuestions(text:string) {
     // Format: Each question block separated by blank line
