@@ -139,8 +139,11 @@ body {
 
   &:not(:has(.fullscreen)) {
     padding: var(--page--margin);
-    padding-top: 6rem;
     background-image: var(--gradient--light);
+
+    &:has(header) {      
+      padding-top: 6rem;
+    }
 
     @media (prefers-color-scheme: dark) {
       background-image: var(--gradient--dark);
@@ -338,4 +341,52 @@ body > script {
   overflow: hidden;
   width: 1px;
   height: 0px;
+}
+
+
+
+i.loading {
+  display: block;
+  width: calc(1.5 * var(--int-padding));
+  height: calc(1.5 * var(--int-padding));
+  clip-path: circle();
+  background: 
+    conic-gradient(from var(--minutecycle),
+    var(--white-00) 0deg,
+    var(--cyan-g),
+    var(--cyan),
+    var(--blue-pr) 360deg);
+  mask-image:
+    url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="37.5" fill="black" stroke="none" /></svg>'),
+    url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50" fill="black" stroke="none" /></svg>');
+  mask-composite: exclude;
+  animation: spin ease 1s infinite, timer 60s linear infinite;
+
+  @media (prefers-color-scheme: dark) {
+    background: 
+      conic-gradient(from var(--minutecycle),
+      var(--white-00) 0deg,
+      var(--blue-pr),
+      var(--blue-half),
+      var(--cyan) 360deg);
+  }
+}
+
+@property --minutecycle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0turn;
+}
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+@keyframes timer {
+    0% {
+        --minutecycle: 0turn;
+    }
+    100% {
+        --minutecycle: 1turn;
+    }
 }

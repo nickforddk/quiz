@@ -83,12 +83,12 @@ const Student = () => {
     }
   }, [state, lastResetVersion]);
 
-  if (!state || !state.activeQuizId) return <div className="p-4">Waiting for quiz...</div>;
-  if (!quiz) return <div className="p-4">Loading quiz…</div>;
+  if (!state || !state.activeQuizId) return <div className="p-4 m-auto"><i className="loading"></i><span className="absolute top-4/5 left-1/2 -translate-x-1/2 text-blue-700 dark:text-cyan-500 text-base">Awaiting quiz</span></div>;
+  if (!quiz) return <div className="p-4 m-auto"><i className="loading"></i><span className="absolute top-4/5 left-1/2 -translate-x-1/2 text-blue-700 dark:text-cyan-500 text-base">Loading quiz</span></div>;
 
   const qIndex = state.currentQuestion;
   const q = quiz.questions[qIndex];
-  if (!q) return <div className="p-4">No question.</div>;
+  if (!q) return <div className="p-4 m-auto">No question</div>;
 
   const persistedAnswer = answers[q.id]?.answer;
   // If localAnswer not set yet, mirror persisted (first render)
