@@ -154,6 +154,7 @@ body {
     }
   }
   &:has(.fullscreen) {
+    --dark: var(--black);
     height: 100dvh;
     overflow: hidden;
   }

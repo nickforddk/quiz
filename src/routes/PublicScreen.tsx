@@ -49,7 +49,7 @@ export default function PublicScreen() {
         <div className="flex flex-row justify-between text-sm font-semibold text-gray-500">
           <span>Q{state.currentQuestion+1} / {quiz.questions.length}</span>
         </div>
-        <h2 className="font-bold mb-8">{q.text}</h2>
+        <h2 className="mb-8">{q.text}</h2>
         <div className="grid gap-4 md:grid-cols-2 auto-rows-fr w-full">
           {q.options.map((o:string) => {
             const count = counts[o];
@@ -69,7 +69,7 @@ export default function PublicScreen() {
           })}
         </div>          
       </div>
-      <div className="bg-grey-500 dark:bg-blue-700 text-white flex md:flex-col w-full md:max-w-40 justify-between text-sm">
+      <div className="bg-grey-500 dark:bg-grey-600 text-white flex md:flex-col w-full md:max-w-40 justify-between text-sm">
         <div className="flex flex-col p-4 gap-1">
           <span className="font-semibold">{quiz.name}</span>
           {state.ended && 'Game over!'}
@@ -77,7 +77,7 @@ export default function PublicScreen() {
           {!state.ended && !state.open && !state.reveal && 'Round closed'}
           {!state.ended && state.reveal && 'Answers revealed'}
         </div>
-        <div className="bg-grey-400 text-blue-800 dark:bg-grey-800 dark:text-grey-400 p-4 text-xs flex flex-col justify-center items-center md:order-1">
+        <div className="bg-grey-400 text-blue-800 dark:bg-grey-700 dark:text-grey-200 p-4 text-xs flex flex-col justify-center items-center md:order-1">
           <span className="qrcode size-25"></span>
           git.nickford.com/quiz
         </div>
