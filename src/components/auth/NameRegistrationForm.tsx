@@ -24,7 +24,7 @@ export default function NameRegistrationForm() {
           setSaving(false);
         }
       }}
-      className="space-y-2"
+      className="space-y-2 flex flex-col"
     >
       <label className="block text-sm font-medium">Enter your display name</label>
       <input
@@ -36,7 +36,7 @@ export default function NameRegistrationForm() {
       />
       <button
         disabled={saving}
-        className="px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white rounded cursor-pointer disabled:opacity-50"
+        className="px-4 py-2 bg-blue-700 text-white dark:bg-blue-300 dark:text-blue-800 hover:bg-blue-600 hover:text-white rounded cursor-pointer disabled:bg-grey-500 disabled:text-grey-300 disabled:cursor-not-allowed disabled:pointer-events-none"
       >
         {saving ? 'Saving...' : 'Save'}
       </button>

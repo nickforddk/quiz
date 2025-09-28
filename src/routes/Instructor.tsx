@@ -34,7 +34,7 @@ export default function Instructor() {
         <h1>Pulse check</h1>
         <div className="menu"><a href="./" target="_blank">Play quiz</a></div>
       </header>
-      <div className="p-6 max-w-sm space-y-4 bg-white dark:bg-blue-800 shadow dark:shadow-cyan-700 flex flex-col mt-auto mb-auto rounded">
+      <div className="p-6 max-w-sm space-y-4 bg-white dark:bg-blue-800 shadow flex flex-col mt-auto mb-auto rounded">
         <button
           disabled={loginBusy}
           onClick={async () => {
@@ -49,7 +49,7 @@ export default function Instructor() {
               setLoginBusy(false);
             }
           }}
-          className="px-4 py-2 bg-blue-700 text-white dark:bg-blue-300 dark:text-blue-700 hover:bg-blue-600 hover:text-white cursor-pointer rounded disabled:bg-grey-500 disabled:text-grey-300 disabled:cursor-not-allowed disabled:pointer-events-none"
+          className="px-4 py-2 bg-blue-700 text-white dark:bg-blue-300 dark:text-blue-800 hover:bg-blue-600 hover:text-white cursor-pointer rounded disabled:bg-grey-500 disabled:text-grey-300 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
           {loginBusy ? 'Connecting…' : 'Continue with GitHub'}
         </button>
