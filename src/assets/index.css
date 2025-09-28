@@ -337,7 +337,7 @@ div#root {
     translate: 0% 0%;
   }
   100% {
-    clip-path: inset(0% round 0px);
+    clip-path: inset(0px round 0px);
   }
 }
 
