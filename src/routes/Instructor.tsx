@@ -34,7 +34,7 @@ export default function Instructor() {
         <h1>Pulse check</h1>
         <div className="menu"><a href="./" target="_blank">Play quiz</a></div>
       </header>
-      <div className="p-6 max-w-sm space-y-4 bg-white dark:bg-blue-800 shadow flex flex-col mt-auto mb-auto rounded">
+      <div className="p-6 max-w-sm space-y-4 bg-white dark:bg-blue-800 shadow dark:shadow-cyan-700 flex flex-col mt-auto mb-auto rounded">
         <button
           disabled={loginBusy}
           onClick={async () => {

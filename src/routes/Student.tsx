@@ -128,7 +128,7 @@ const Student = () => {
   return (
     <>
       {needsName && (
-        <div className="mt-auto mb-auto bg-white dark:bg-blue-700 p-4 rounded shadow">
+        <div className="mt-auto mb-auto bg-white dark:bg-blue-800 p-4 rounded shadow dark:shadow-cyan-700">
           <NameRegistrationForm />
         </div>
         
