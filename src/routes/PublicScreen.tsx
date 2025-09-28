@@ -84,7 +84,7 @@ export default function PublicScreen() {
       </div>
     </div>
     {showScoreboard && (
-      <div className="scoreboard absolute top-0 left-0 w-screen h-screen p-8 bg-grey-400/50 dark:bg-black/50 backdrop-blur overflow-auto">
+      <div className="scoreboard absolute top-0 left-0 w-screen h-screen p-8 bg-grey-400/50 dark:bg-grey-800/50 backdrop-blur overflow-auto">
         <h2 className="mb-4 icon">Scoreboard</h2>
         <div className="grid gap-2">
           {scores.map((s:any, i:number) => (
