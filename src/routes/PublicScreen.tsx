@@ -46,11 +46,11 @@ export default function PublicScreen() {
     <>
     <div className="h-screen w-screen fullscreen flex flex-col md:flex-row md:gap-8 justify-between">
       <div className="space-y-4 h-full w-full flex flex-col md:justify-center overflow-auto">
-        <div className="flex flex-row justify-between text-sm font-semibold text-gray-500">
+        <div className="flex flex-row justify-between text-sm font-semibold text-gray-500 tabular-nums">
           <span>Q{state.currentQuestion+1} / {quiz.questions.length}</span>
         </div>
-        <h2 className="mb-8">{q.text}</h2>
-        <div className="grid gap-4 md:grid-cols-2 auto-rows-fr w-full">
+        <div className="titlefont text-3xl font-bold mb-8">{q.text}</div>
+        <div className="titlefont grid gap-4 md:grid-cols-2 auto-rows-fr w-full">
           {q.options.map((o:string) => {
             const count = counts[o];
             const correct = state.reveal && q.correct === o;
@@ -60,7 +60,7 @@ export default function PublicScreen() {
                 !correct && state.reveal && 'text-grey-500',
                 correct && 'border-green-600 dark:border-green-300 bg-green-500 text-white'
               ].filter(Boolean).join(' ')}>
-                <div className="font-semibold min-h-8 text-lg">{o}</div>
+                <div className="font-semibold min-h-[3lh] text-lg leading-[1.2]">{o}</div>
                 <div className="text-3xl font-bold absolute top-4 right-4 leading-none tabular-nums">
                   {showCounts && count > 0 ? count : ''}
                 </div>

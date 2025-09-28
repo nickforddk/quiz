@@ -168,7 +168,7 @@ export default function QuizManager({ state }: { state:any }) {
           <div key={q.id} className={`rounded p-4 py-3 flex flex-col gap-2 ${q.id===activeId?'bg-white dark:bg-blue-700 dark:text-white':'bg-grey-400 dark:bg-blue-800 dark:text-white'}`}>
             <div className="flex justify-between gap-4">
               <span className="font-medium">{q.name}</span>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-start">
                 <button
                   className="text-sm px-2 py-1 border rounded cursor-pointer hover:bg-blue-600 hover:text-white hover:border-transparent"
                   onClick={() =>
@@ -190,7 +190,7 @@ export default function QuizManager({ state }: { state:any }) {
                 >Activate</button>}
               </div>
             </div>
-            <div className="text-xs text-grey-600 dark:text-blue-300">
+            <div className="text-xs text-grey-600 dark:text-blue-300 tabular-nums">
               {q.questions?.length || 0} questions
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function QuizManager({ state }: { state:any }) {
           </div>
           <div className="text-xs mt-4 flex flex-col md:flex-row gap-2 justify-between">
             <div className="flex">
-              <span className="p-1 py-0.5 bg-blue-700 text-white text-bold rounded">
+              <span className="p-1 py-0.5 bg-blue-700 text-white text-bold rounded tabular-nums">
                 Q{state.currentQuestion+1} / {activeQuiz.questions.length}
               </span>
               <span className="p-1 py-0.5">
@@ -281,7 +281,7 @@ export default function QuizManager({ state }: { state:any }) {
                 {' '}Reveal: {state.reveal? 'Yes':'No'}
               </span>
             </div>
-            <span className="p-1 py-0.5 bg-grey-400 text-grey-700 rounded">
+            <span className="p-1 py-0.5 bg-grey-400 text-grey-700 rounded tabular-nums">
               Users: {userCount} | Answered round: {answeredCount}
             </span>
           </div>

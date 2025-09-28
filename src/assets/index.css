@@ -195,6 +195,12 @@ div#root {
     color: unset;
   }
 
+  .titlefont {
+    font-family: var(--font-family--title);
+    font-feature-settings: var(--font-settings--title);
+    font-variation-settings: var(--font-variation--title);
+  }
+
   > header {
     > h1 {
       display: flex;

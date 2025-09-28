@@ -146,8 +146,8 @@ const Student = () => {
             </div>
 
             <div>
-              <p className="font-medium text-lg mb-3">{q.text}</p>
-              <div className="grid gap-2 text-lg">
+              <p className="titlefont font-medium text-lg mb-3">{q.text}</p>
+              <div className="titlefont grid gap-2 text-lg">
                 {q.options.map((o: string) => {
                   const isChosen = effectiveAnswer === o;
                   const correct = state.reveal && q.correct === o;
