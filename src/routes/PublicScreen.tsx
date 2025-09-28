@@ -73,7 +73,7 @@ export default function PublicScreen() {
         <div className="flex flex-col p-4 gap-1">
           <span className="font-semibold">{quiz.name}</span>
           {state.ended && 'Quiz ended'}
-          {!state.ended && state.open && 'Accepting answers!'}
+          {!state.ended && state.open && 'Accepting answers'}
           {!state.ended && !state.open && !state.reveal && 'Round closed'}
           {!state.ended && state.reveal && 'Answers revealed'}
         </div>
