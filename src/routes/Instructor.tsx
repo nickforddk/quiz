@@ -49,7 +49,7 @@ export default function Instructor() {
               setLoginBusy(false);
             }
           }}
-          className="px-4 py-2 bg-blue-700 text-white dark:bg-blue-300 dark:text-blue-700 hover:bg-blue-600 hover:text-white rounded disabled:bg-grey-500 disabled:text-grey-300 disabled:cursor-not-allowed disabled:pointer-events-none"
+          className="px-4 py-2 bg-blue-700 text-white dark:bg-blue-300 dark:text-blue-700 hover:bg-blue-600 hover:text-white cursor-pointer rounded disabled:bg-grey-500 disabled:text-grey-300 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
           {loginBusy ? 'Connecting…' : 'Continue with GitHub'}
         </button>
